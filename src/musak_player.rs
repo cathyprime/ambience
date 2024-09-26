@@ -1,5 +1,6 @@
 use rodio::{Decoder, OutputStream, Sink, Source};
 use std::{fs::File, io::BufReader};
+use std::sync::mpsc::Sender;
 
 #[derive(Debug)]
 pub(crate) enum MusakError {
@@ -38,7 +39,11 @@ impl std::fmt::Display for MusakError {
 	}
 }
 
-pub(crate) fn musak() -> Result<(), MusakError> {
+pub(crate) fn musak(tx: Sender<Result<(), MusakError>>) {
+    tx.send(m_musak()).unwrap();
+}
+
+fn m_musak() -> Result<(), MusakError> {
 	let (_stream, stream_handle) = OutputStream::try_default()?;
 	let sink = Sink::try_new(&stream_handle)?;
 	let sink2 = Sink::try_new(&stream_handle)?;
@@ -47,16 +52,12 @@ pub(crate) fn musak() -> Result<(), MusakError> {
 		let stream = BufReader::new(File::open("assets/stream.ogg")?);
 		Decoder::new_looped(stream)?
 			.repeat_infinite()
-			.take_duration(std::time::Duration::from_secs(1))
-			.amplify(1.)
 	};
 
 	let birds_source = {
 		let birds = BufReader::new(File::open("assets/birds.ogg")?);
 		Decoder::new_looped(birds)?
 			.repeat_infinite()
-			.take_duration(std::time::Duration::from_secs(1))
-			.amplify(1.)
 	};
 
 	sink.set_volume(0.2);
