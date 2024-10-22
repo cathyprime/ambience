@@ -28,6 +28,7 @@ impl eframe::App for MyApp {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn run_ui() {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default().with_inner_size([320.0, 240.0]),
