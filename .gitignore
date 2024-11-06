@@ -1,2 +1,4 @@
-/target
-assets/*
+bin/*
+build/*
+external/*
+*tar.gz
