@@ -1,28 +1,34 @@
 #include <raylib.h>
 #include <assert.h>
 #include "data.hh"
-#include "ui.hh"
 
 const int WIDTH = 480;
 const int HEIGHT = 640;
 const int BUTTON_WIDTH = 160;
 
-#define BUTTON Button<BUTTON_WIDTH>
+int row_len()
+{
+    int x = GetScreenWidth() / BUTTON_WIDTH;
+    return x == 0 ? 1 : x;
+}
 
-// TODO: make this shit responsive
-void draw_record_row(std::vector<Sound_Record>* rec, float row_num = 0.f)
+void draw_record_row(std::vector<Sound_Record>* rec)
 {
     assert(rec->size() > 0);
-    float border_size = (WIDTH - (*rec)[0].width() * 3) / 4;
-    float default_cell_padding = BUTTON_WIDTH - (*rec)[0].width();
-    float offset = default_cell_padding - border_size;
+    int len = row_len();
+    int button_side = (*rec)[0].width();
 
-    BUTTON button1{offset,  {BUTTON_WIDTH*0, row_num * 160}, &(*rec)[0 + 3 * row_num]};
-    BUTTON button2{0,       {BUTTON_WIDTH*1, row_num * 160}, &(*rec)[1 + 3 * row_num]};
-    BUTTON button3{-offset, {BUTTON_WIDTH*2, row_num * 160}, &(*rec)[2 + 3 * row_num]};
-    button1.draw();
-    button2.draw();
-    button3.draw();
+    float total_padding = GetScreenWidth() - button_side * len;
+    float spacing = total_padding / (len + 1);
+
+    for (size_t i = 0; i < rec->size(); ++i) {
+        int col = i % len;
+
+        float x = spacing + col * (button_side + spacing);
+        float y = i / row_len() * 160;
+
+        (*rec)[i].draw(x, y);
+    }
 }
 
 int main()
@@ -40,10 +46,7 @@ int main()
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(DARKPURPLE);
-        draw_record_row(&result, 0);
-        draw_record_row(&result, 1);
-        draw_record_row(&result, 2);
-        draw_record_row(&result, 3);
+        draw_record_row(&result);
         EndDrawing();
     }
     CloseWindow();
