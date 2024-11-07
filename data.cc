@@ -1,6 +1,36 @@
+#include <raylib.h>
 #include <fstream>
 #include <sstream>
 #include "data.hh"
+
+const char* Sound_Record::c_str() const
+{
+    auto pattern = "Sound_Record{ .name = %s, .path = %s, .icon = %s }";
+    char* str = (char*)malloc(strlen(pattern) - 6 + name.size() + path.size() + icon.size());
+    sprintf(str, pattern, name.c_str(), path.c_str(), icon.c_str());
+    return str;
+}
+
+/* |-------|
+ * | NAME  | <- name
+ * | ***** | <- icon
+ * | ***** | <- icon
+ * | ===== | <- sound bar
+ * |-------|
+ */
+
+void Sound_Record::draw(int x, int y) const
+{
+    const int font_size = 30;
+    int width = MeasureText(name.c_str(), font_size);
+    DrawRectangle(x, y, 140, 140, GREEN);
+    DrawText(name.c_str(), x + (140 - width)/2, y + 140/2, font_size, RED);
+}
+
+float Sound_Record::width() const
+{
+    return 140.f;
+}
 
 std::vector<std::string> split(char delim, std::string& s)
 {
